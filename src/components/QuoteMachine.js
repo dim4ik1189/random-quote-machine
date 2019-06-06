@@ -7,31 +7,70 @@ import '../App.css';
 import QuoteList from './QuoteList';
 
 class QuoteMachine extends Component {
+    state = {
+        currentQuote: null,
+        showCard: true,
+        backgroundColor: '#1d7899',
+        colors: ['#16a085', '#27ae60', '#2c3e50', '#f39c12', '#e74c3c', '#9b59b6', '#FB6964', '#342224', "#472E32", "#BDBB99", "#77B1A9", "#73A857"]
+    };
+
     componentDidMount() {
         this.props.fetchQuotes();
     }
 
-    render() {
-        const {error, pending, randomIndex, quotes} = this.props;
+    componentWillReceiveProps(nextProps, nextContext) {
+        const indexQuote = Math.floor(Math.random() * nextProps.quotes.length);
 
-        const positionCenter = {
-            display: 'flex',
-            justifyContent: 'center',
-            marginTop: '10em',
-        };
+        if(nextProps.quotes && nextProps.quotes.length) {
+            this.setState({
+                currentQuote: nextProps.quotes[indexQuote]
+            })
+        }
+    }
+
+    nextQuote = () => {
+        const indexColor = Math.floor(Math.random() * this.state.colors.length);
+        const indexQuote = Math.floor(Math.random() * this.props.quotes.length);
+
+        this.setState(state => ({
+            currentQuote: this.props.quotes[indexQuote],
+            backgroundColor: state.colors[indexColor],
+            showCard: !state.showCard
+        }), () => {
+            this.setState(state => ({
+                showCard: !state.showCard
+            }))
+        })
+
+    };
+
+    render() {
+        const { error, pending } = this.props;
+
         if(error) {
-            return <div style={positionCenter}>Error ! {error.message}</div>
+            return <div className="quote-box">Error ! {error.message}</div>
         }
 
         if(pending) {
-            return <div style={positionCenter}>Loading...
+            return <div className="quote-box">Loading...
                 <Spinner color="primary"/>
             </div>
         }
 
         return (
-            <Container id="quote-box">
-                <QuoteList quoteList={quotes} i={randomIndex}/>
+            <Container className="quote-box">
+                {
+                    this.state.currentQuote &&
+                        <QuoteList
+                            color={this.state.backgroundColor}
+                            currentQuote={this.state.currentQuote}
+                            nextQuote={this.nextQuote}
+                            showCard={this.state.showCard}
+                        />
+                }
+                <div className="footer">
+                    by <a target="_blank" rel="noopener" href="https://github.com/dim4ik1189">dim4ik</a>
+                </div>
             </Container>
         );
     }

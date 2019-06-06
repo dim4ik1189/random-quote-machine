@@ -5,13 +5,10 @@ import {
 } from '../actions/actions';
 
 const initialState = {
-    randomIndex: '',
     pending: false,
     quotes: [],
     error: null
 };
-
-const randomNumber = () => Math.floor(Math.random() * 101);
 
 const quoteReducer = (state = initialState, action) => {
     switch(action.type) {
@@ -24,7 +21,6 @@ const quoteReducer = (state = initialState, action) => {
             return {
                 ...state,
                 quotes: action.quotes,
-                randomIndex: randomNumber(),
                 pending: false
             };
         case FETCH_QUOTES_ERROR: {
